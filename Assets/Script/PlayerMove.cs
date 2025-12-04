@@ -5,7 +5,7 @@ public class PlayerMove : MonoBehaviour
 {
     [Header("이동 및 회전")]
     public float moveCooldown = 0.05f;
-    bool isMoving = false;
+    public bool isMoving = false;
     public float moveTime = 0.05f;   // 한 칸을 이동하는 시간 (짧을수록 빠름)
     public float jumpHeight = 0.7f;         // 얼마나 위로 튀어오를지
 
