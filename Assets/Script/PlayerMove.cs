@@ -7,7 +7,7 @@ public class PlayerMove : MonoBehaviour
     public float moveCooldown = 0.05f;
     public bool isMoving = false;
     public float moveTime = 0.05f;   // 한 칸을 이동하는 시간 (짧을수록 빠름)
-    public float jumpHeight = 0.7f;         // 얼마나 위로 튀어오를지
+    public float jumpHeight = 0.7f;  // 얼마나 위로 튀어오를지
 
     Quaternion targetRotation;
     public float rotateSpeed = 50f;
@@ -41,6 +41,9 @@ public class PlayerMove : MonoBehaviour
             move = Vector3.forward;
             targetRotation = Quaternion.Euler(0, 0, 0); // 회전
             moveCooldown = 0.1f;
+
+            // 길 생성
+            MabSpawnManager.instance.SpawnLoad();
         }
 
         // 아래쪽 (S 또는 ↓)
