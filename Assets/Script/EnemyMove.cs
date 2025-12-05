@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class EnemyMove : MonoBehaviour
 {
-    public Vector3 startPos;
     public float endPos;
     public bool islive = false;
     float speed;
@@ -10,11 +9,10 @@ public class EnemyMove : MonoBehaviour
     void OnEnable()
     {
         // 초기 설정
-        transform.position = startPos;
         islive = true;  // 살아남
         transform.rotation = Quaternion.Euler(0, 90, 0); // 바라보는 방향
 
-        speed = Random.Range(5f, 7f); // 속도 조정
+        speed = Random.Range(7f, 9f); // 속도 조정
     }
 
     private void OnDisable()

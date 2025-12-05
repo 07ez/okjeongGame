@@ -10,10 +10,25 @@ public class SpawnEnemyManager : MonoBehaviour
     public Transform spawnDot;
     public Transform destroyDot;
 
-    void Start()
+    public Transform poolParent;
+
+    private Coroutine enemyRoutine;
+
+    void OnEnable()
     {
-        StartCoroutine(EnemyLoop());
+        if (enemyRoutine == null)
+            enemyRoutine = StartCoroutine(EnemyLoop());
     }
+
+    void OnDisable()
+    {
+        if (enemyRoutine != null)
+        {
+            StopCoroutine(enemyRoutine);
+            enemyRoutine = null;
+        }
+    }
+
 
     GameObject GetEnemy(int choosenEnemyNum)
     {
@@ -23,20 +38,20 @@ public class SpawnEnemyManager : MonoBehaviour
             if (!enemy.activeSelf)
             {
                 enemy.SetActive(true);
+                enemy.transform.position = spawnDot.position;
+
+                enemy.GetComponent<EnemyMove>().endPos = destroyDot.position.x;
                 return enemy;
             }
         }
 
         // 2. 없으면 새로 생성
-        GameObject newEnemy = Instantiate(enemys[choosenEnemyNum]);
+        GameObject newEnemy = Instantiate(enemys[choosenEnemyNum], spawnDot.position, Quaternion.identity, poolParent);
         enemyPool.Add(newEnemy);
 
         // 적 기본 세팅
-        // 1) 생성 위치로
-        newEnemy.transform.position = spawnDot.position;
 
-        // 2) 처음, 끝 위치 전달
-        newEnemy.GetComponent<EnemyMove>().startPos = spawnDot.position;
+        // 1) 끝 위치 전달
         newEnemy.GetComponent<EnemyMove>().endPos = destroyDot.position.x;
         return newEnemy;
     }
@@ -47,12 +62,12 @@ public class SpawnEnemyManager : MonoBehaviour
         {
             // 소환할 적을 정함 (랜덤)
             // 0 ~ 3 중 숫자를 정함
-            int choosenEnemy = Random.Range(0, 4);
+            int choosenEnemy = Random.Range(0, enemys.Length);
             // 적 생성
             GetEnemy(choosenEnemy);
 
-            // 1~2초 뒤에 재실행
-            float wait = Random.Range(1f, 2f);
+            // 1~3초 뒤에 재실행
+            float wait = Random.Range(1.2f, 2.4f);
             yield return new WaitForSeconds(wait);
         }
     }
