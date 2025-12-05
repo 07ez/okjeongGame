@@ -30,7 +30,7 @@ public class MabSpawnManager : MonoBehaviour
 
     public void SpawnLoad()
     {
-        Vector3 spawnLoadPos = new Vector3(0, -0.7f, GameManager.instance.player.transform.position.z + 13);
+        Vector3 spawnLoadPos = new Vector3(0, -0.7f, GameManager.instance.player.transform.position.z + 15);
         Vector3 destroyLoadPos = new Vector3(0, -0.7f, GameManager.instance.player.transform.position.z - 10);
 
         // 앞쪽에 타일이 없으면 추가 생성(또는 재사용)

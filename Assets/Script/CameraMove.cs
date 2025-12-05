@@ -6,7 +6,7 @@ public class CameraMove : MonoBehaviour
     public Transform playerPos;
     Coroutine camCoroutine;
 
-    private void Awake()
+    private void Start()
     {
         playerPos = GameManager.instance.player.transform;
     }

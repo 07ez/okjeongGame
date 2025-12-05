@@ -12,6 +12,11 @@ public class PlayerMove : MonoBehaviour
     Quaternion targetRotation;
     public float rotateSpeed = 50f;
 
+    private void Start()
+    {
+        targetRotation = transform.rotation;
+    }
+
     void Update()
     {
         if (isMoving) return;
