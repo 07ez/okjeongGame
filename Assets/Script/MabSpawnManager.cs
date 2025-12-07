@@ -6,8 +6,8 @@ public class MabSpawnManager : MonoBehaviour
     public GameObject[] Loads;
     public static MabSpawnManager instance;
 
-    public List<GameObject> pool0 = new List<GameObject>(); // Load[0] 풀
-    public List<GameObject> pool1 = new List<GameObject>(); // Load[1] 풀
+    // 4개의 풀 (0,1,2,3)
+    private List<GameObject>[] pools = new List<GameObject>[4];
 
     public Transform poolParent;
 
@@ -22,10 +22,20 @@ public class MabSpawnManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
+
+        // 풀 초기화
+        for (int i = 0; i < 4; i++)
+            pools[i] = new List<GameObject>();
     }
+
+    /// <summary>
+    /// 풀링 시스템
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
     GameObject GetTile(int type)
     {
-        List<GameObject> pool = (type == 0) ? pool0 : pool1;
+        List<GameObject> pool = pools[type];
 
         foreach (GameObject tile in pool)
         {
@@ -42,6 +52,9 @@ public class MabSpawnManager : MonoBehaviour
         return newTile;
     }
 
+    /// <summary>
+    /// load / warning 생성
+    /// </summary>
     int GetTileType()
     {
         float t = Mathf.Min((float)spawnLocation / maxLevelForScaling, 1.0f);
@@ -53,38 +66,100 @@ public class MabSpawnManager : MonoBehaviour
 
         return (r < roadProbability) ? 1 : 0;
     }
+    /// <summary>
+    /// 1/2 확률로 돌리기
+    /// </summary>
+    /// <param name="tile"> 돌릴타일 </param>
+    void RotateTile(GameObject tile)
+    {
+        if (tile.CompareTag("WarningLoad") && Random.Range(0, 2) == 1)
+            tile.transform.rotation = Quaternion.Euler(0, 180, 0);
+        else
+            tile.transform.rotation = Quaternion.Euler(0, 0, 0);
+    }
 
+    /// <summary>
+    /// 길 어두운색 밝은색 결정
+    /// </summary>
+    /// <param name="loadType"> 길 타입 </param>
+    /// <param name="z"> 플레이어 z 위치 </param>
+    /// <returns></returns>
+    int GetLoadColor(int loadType, float z)
+    {
+        // z 짝홀 계산 (floor 사용)
+        int zIndex = Mathf.Abs(Mathf.FloorToInt(z) % 2); // 짝=0, 홀=1
+
+        // 최종 인덱스 (길:0/1, 위험:2/3)
+        return loadType * 2 + zIndex;
+    }
+
+    /// <summary>
+    /// 타일 스폰
+    /// </summary>
     public void SpawnLoad()
     {
+        // 플레이어 z위치
         float z = GameManager.instance.player.transform.position.z;
-        Vector3 spawnLoadPos = new Vector3(0, -0.7f, z + 20);
-        Vector3 destroyLoadPos = new Vector3(0, -0.7f, z - 10);
+
+        Vector3 spawnLoadPos = new Vector3(0, 0, z + 20.2f);
+        Vector3 destroyLoadPos = new Vector3(0, 0, z - 10);
 
         // 앞에 이미 있는지 검사
-        bool needSpawn = true;
+        if (!NeedSpawn(spawnLoadPos))
+            return;
 
-        foreach (GameObject tile in pool0)
-            if (tile.activeSelf && Vector3.Distance(tile.transform.position, spawnLoadPos) < 0.1f)
-                needSpawn = false;
+        // Load / warning 선택
+        int baseType = GetTileType(); // 0 또는 1
 
-        foreach (GameObject tile in pool1)
-            if (tile.activeSelf && Vector3.Distance(tile.transform.position, spawnLoadPos) < 0.1f)
-                needSpawn = false;
+        // 최종 프리팹(0~3)
+        int finalType = GetLoadColor(baseType, z);
 
-        if (needSpawn)
-        {
-            int type = GetTileType(); // 0 == load / 1 == warningLoad
-            GameObject tile = GetTile(type);
-            tile.transform.position = spawnLoadPos;
-        }
+        // 타일 스폰
+        GameObject tile = GetTile(finalType);
+        tile.transform.position = spawnLoadPos;
+
+        // 타일 돌릴지 말지 정함
+        RotateTile(tile);
 
         // 뒤 타일 정리
-        foreach (GameObject tile in pool0)
-            if (tile.activeSelf && tile.transform.position.z < destroyLoadPos.z)
-                tile.SetActive(false);
+        CleanOldTiles(destroyLoadPos.z);
+    }
 
-        foreach (GameObject tile in pool1)
-            if (tile.activeSelf && tile.transform.position.z < destroyLoadPos.z)
-                tile.SetActive(false);
+    /// <summary>
+    /// 스폰 할수있는가
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <returns></returns>
+    bool NeedSpawn(Vector3 pos)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            foreach (GameObject tile in pools[i])
+            {
+                if (tile.activeSelf &&
+                    Vector3.Distance(tile.transform.position, pos) < 0.1f)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    /// <summary>
+    /// 뒷타일 제거
+    /// </summary>
+    /// <param name="playerZ"></param>
+    public void CleanOldTiles(float playerZ)
+    {
+        float destroyZ = playerZ - 10f;
+
+        for (int i = 0; i < 4; i++)
+        {
+            foreach (GameObject tile in pools[i])
+            {
+                if (tile.activeSelf && tile.transform.position.z < destroyZ)
+                    tile.SetActive(false);
+            }
+        }
     }
 }

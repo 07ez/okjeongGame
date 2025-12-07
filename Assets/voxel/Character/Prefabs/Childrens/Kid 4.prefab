@@ -10,9 +10,10 @@ GameObject:
   m_Component:
   - component: {fileID: 3639650820352701878}
   - component: {fileID: 2707431544149003550}
+  - component: {fileID: 3425511746577819121}
   m_Layer: 0
   m_Name: Kid 4
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -27,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7429635583086743271}
@@ -45,8 +46,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac09c6fddcbf86d4192d3849b66e710e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMove
+  startPos: 0
   endPos: 0
   islive: 0
+--- !u!65 &3425511746577819121
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5369717047318453323}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 2, z: 0.6}
+  m_Center: {x: 0, y: 1.4, z: 0}
 --- !u!1001 &6958597228214724876
 PrefabInstance:
   m_ObjectHideFlags: 0
