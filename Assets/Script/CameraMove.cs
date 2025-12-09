@@ -13,7 +13,7 @@ public class CameraMove : MonoBehaviour
 
     void Update()
     {
-        Vector3 targetPos = new Vector3 (playerPos.position.x + 2, transform.position.y, playerPos.position.z -3);
+        Vector3 targetPos = new Vector3 (playerPos.position.x + 1, transform.position.y, playerPos.position.z -2);
         // 플래이어가 움직이고 있을때 실행
         if (GameManager.instance.player.GetComponent<PlayerMove>().isMoving)
         {

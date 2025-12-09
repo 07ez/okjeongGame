@@ -1,5 +1,6 @@
-using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
+using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -11,11 +12,15 @@ public class PlayerMove : MonoBehaviour
     Quaternion targetRotation;
     public float rotateSpeed = 50f;
 
-    Rigidbody rb;
+    // 아이템
+    public GameObject shieldActive;
+    public bool isGetShield = false;
+    float itemTimer;
+
+    private Coroutine moveCoroutine;
 
     private void Start()
     {
-        rb = GetComponent<Rigidbody>();
         targetRotation = transform.rotation;
     }
 
@@ -26,15 +31,23 @@ public class PlayerMove : MonoBehaviour
         // 이동
         Vector3 move = Vector3.zero;
 
-        // 오른쪽 (D 또는 →)
-        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+        // 맵 밖으로 나가지 못하게
+        bool canRightMove = true;
+        bool canLeftMove = true;
+        if (gameObject.transform.position.x > 3f)
+            canRightMove = false;
+        if (gameObject.transform.position.x < -3f)
+            canLeftMove = false;
+
+            // 오른쪽 (D 또는 →)
+            if ((Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && canRightMove)
         {
             move = Vector3.right;
             targetRotation = Quaternion.Euler(0, 90, 0); // 회전
         }
 
         // 왼쪽 (A 또는 ←)
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+        if ((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && canLeftMove)
         {
             move = Vector3.left;
             targetRotation = Quaternion.Euler(0, -90, 0); // 회전
@@ -48,6 +61,12 @@ public class PlayerMove : MonoBehaviour
 
             // 길 생성
             MabSpawnManager.instance.SpawnLoad();
+
+            // 점수
+            if (GameManager.instance.score < transform.position.z +1)
+            {
+                GameManager.instance.AddScore(1);
+            }
         }
 
         // 아래쪽 (S 또는 ↓)
@@ -60,7 +79,7 @@ public class PlayerMove : MonoBehaviour
         // 한칸 이동
         if (move != Vector3.zero)
         {
-            StartCoroutine(Move(move));
+            moveCoroutine = StartCoroutine(Move(move));
         }
 
         // 회전을 자연스럽게 보간
@@ -69,6 +88,18 @@ public class PlayerMove : MonoBehaviour
             targetRotation,
             Time.deltaTime * rotateSpeed
         );
+
+    }
+
+    private void FixedUpdate()
+    {
+        if (itemTimer > 0) {
+            itemTimer -= Time.fixedDeltaTime;
+        }
+        else {
+            shieldActive.SetActive(false);
+            isGetShield = false;
+        }
     }
     IEnumerator Move(Vector3 move)
     {
@@ -101,7 +132,23 @@ public class PlayerMove : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Enemy"))
-            Debug.Log("사망");
+        {
+            if (isGetShield)
+            {
+                other.gameObject.SetActive(false);
+                isGetShield = false;
+                itemTimer = 0f;
+            }
+            else
+            {
+                Debug.Log("사망");
+                // 스테이지 재시작
+                StopCoroutine(moveCoroutine);
+                isMoving = false;
+                transform.position = new Vector3(0, -0.2f, -0.2f);
+                GameManager.instance.SetScore(); 
+            }
+        }
         if (other.gameObject.CompareTag("Item"))
         {
             Item item = other.GetComponent<Item>();
@@ -109,7 +156,13 @@ public class PlayerMove : MonoBehaviour
             switch (item.type)
             {
                 case ItemType.Shield:
-                    Debug.Log("쉴드");
+                    isGetShield = true;
+                    shieldActive.SetActive(true);
+                    itemTimer = 10f;
+                    Destroy(other.gameObject);
+                    break;
+                case ItemType.Bomb:
+                    other.GetComponent<Bomb>().Fire(transform.position);
                     break;
             }
         }
