@@ -96,11 +96,8 @@ public class MabSpawnManager : MonoBehaviour
     /// <summary>
     /// 타일 스폰
     /// </summary>
-    public void SpawnLoad()
+    public void SpawnLoad(float z) // z는 플레이어의 z위치
     {
-        // 플레이어 z위치
-        float z = GameManager.instance.player.transform.position.z;
-
         Vector3 spawnLoadPos = new Vector3(0, 0, z + 20.2f);
         Vector3 destroyLoadPos = new Vector3(0, 0, z - 10);
 
@@ -161,5 +158,12 @@ public class MabSpawnManager : MonoBehaviour
                     tile.SetActive(false);
             }
         }
+    }
+
+    public void AllTileReset()
+    {
+        for (int i = 0; i < 4 ;i++)
+            foreach(GameObject tile in pools[i])
+                tile.SetActive(false);
     }
 }

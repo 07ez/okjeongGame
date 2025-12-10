@@ -24,6 +24,6 @@ public class ItemLoad : MonoBehaviour
     {
         // 어떤 아이템 스폰할지 정하고 스폰
         inGameitems = Instantiate(items[Random.Range(0, items.Length)], poolParent);
-        inGameitems.transform.localPosition = new Vector3(Random.Range(-4, 5), 0.5f, 0);
+        inGameitems.transform.localPosition = new Vector3(Random.Range(-4, 5), 0, 0);
     }
 }

@@ -12,6 +12,9 @@ public class GameManager : MonoBehaviour
     public int maxScore;
     public TMP_Text scoreUI;
 
+    // 따라오는 적
+    public GameObject[] FollowEnemy;
+
     private void Awake()
     {
         instance = this;
@@ -23,7 +26,17 @@ public class GameManager : MonoBehaviour
         scoreUI.text = $"{score}";
     }
 
-    public void SetScore()
+    public void Reset()
+    {
+        SetScore();
+        MabSpawnManager.instance.AllTileReset();
+        for (int i = 0; i < FollowEnemy.Length; i++)
+        {
+            FollowEnemy[i].GetComponent<BossMove>().ResetPos();
+        }
+    }
+
+    private void SetScore()
     {
         if (score > maxScore) 
             maxScore = score;

@@ -30,7 +30,7 @@ public class EnemyLoad : MonoBehaviour
 
             // 3. Instantiate
             GameObject enemy = GetFromPool(prefab);
-            enemy.transform.localPosition = new Vector3(xPos, 0.5f, 0);
+            enemy.transform.localPosition = new Vector3(xPos, 0, 0);
             enemy.transform.localRotation = Quaternion.Euler(0, 180, 0);
             enemy.SetActive(true);
 

@@ -8,6 +8,7 @@ TagManager:
   - Shield
   - Item
   - WarningLoad
+  - Boss
   layers:
   - Default
   - TransparentFX
