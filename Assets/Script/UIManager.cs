@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections;
 
 public class UIManager : MonoBehaviour
 {
@@ -8,6 +9,8 @@ public class UIManager : MonoBehaviour
     public GameObject itemUI;
     public TMP_Text itemName;
     public GameObject itemBar;
+    public Image ResetIMG;
+    public RectTransform OKrt;
     RectTransform rt;
     Animator anim;
 
@@ -15,13 +18,17 @@ public class UIManager : MonoBehaviour
 
     bool isGetItem = false;
 
+    public int sw = 1;
+
     private void Awake()
     {
         instance = this;
 
         rt = itemBar.GetComponent<RectTransform>();
         anim = itemUI.GetComponent<Animator>();
+        StartCoroutine(Golefttext());
     }
+
     public void GetItem(int itemNum) // 0 == ΩØµÂ, 1 == ∆¯≈∫
     {
         anim.SetBool("GetItem", true);
@@ -73,6 +80,43 @@ public class UIManager : MonoBehaviour
         {
             rt.sizeDelta = new Vector2(rt.sizeDelta.x - Time.deltaTime * (480f / barSpeed),
             rt.sizeDelta.y);
+        }
+    }
+
+    public void ResetMap()
+    {
+        OKrt.anchoredPosition = new Vector2(-1200, 0);
+        StartCoroutine(Golefttext());
+    }
+
+    IEnumerator Golefttext()
+    {
+
+        sw *= -1; // 1¿Ã∏È fadeOut | -1¿Ã∏È fadeIn
+
+        Vector2 start = OKrt.anchoredPosition;
+        Vector2 end = start + new Vector2(1200, 0);
+        Color colorstart = ResetIMG.color;
+        Color colorend = new Color(colorstart.r, colorstart.g, colorstart.b, colorstart.a + 1f * sw);
+
+        float t = 0;
+        while (t < 1)
+        {
+            t += Time.deltaTime / 0.5f;
+
+            Vector2 pos = Vector2.Lerp(start, end, t);
+            Color color = Color.Lerp(colorstart, colorend, t);
+
+            OKrt.anchoredPosition = pos;
+            ResetIMG.color = color;
+
+            yield return null;
+        }
+        if (sw == 1) // FadeOut
+        {
+            yield return new WaitForSecondsRealtime(0.5f);
+            GameManager.instance.ResetMap();
+            StartCoroutine(Golefttext());
         }
     }
 }

@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMove : MonoBehaviour
@@ -21,6 +20,9 @@ public class PlayerMove : MonoBehaviour
     private Coroutine moveCoroutine;
 
     bool isDie = false;
+    bool getStart = false;
+
+    public GameObject boss; // 원래 여기서 하면 안돼는데 여기가 편함ㅎ
 
     private void Start()
     {
@@ -42,8 +44,8 @@ public class PlayerMove : MonoBehaviour
         if (gameObject.transform.position.x < -3f)
             canLeftMove = false;
 
-            // 오른쪽 (D 또는 →)
-            if ((Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && canRightMove && !isDie)
+        // 오른쪽 (D 또는 →)
+        if ((Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && canRightMove && !isDie)
         {
             move = Vector3.right;
             targetRotation = Quaternion.Euler(0, 90, 0); // 회전
@@ -88,20 +90,23 @@ public class PlayerMove : MonoBehaviour
             targetRotation,
             Time.deltaTime * rotateSpeed
         );
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+            Application.Quit();
     }
 
-    private void ResetMap()
+    public void ResetMap()
     {
         // 스테이지 재시작
         if (moveCoroutine != null)
             StopCoroutine(moveCoroutine);
         isMoving = false;
-        GameManager.instance.Reset();
         UIManager.instance.UseItem();
         transform.position = new Vector3(0, -0.2f, -0.2f);
         transform.rotation = Quaternion.identity;
+        getStart = false;
         isDie = false;
-        
+        boss.SetActive(false);
     }
 
     private void FixedUpdate()
@@ -118,6 +123,12 @@ public class PlayerMove : MonoBehaviour
     }
     IEnumerator Move(Vector3 move)
     {
+        if (!getStart)
+        {
+            getStart = true;
+            boss.SetActive(true);
+        }
+
         isMoving = true;
 
         Vector3 start = transform.position;
@@ -164,8 +175,7 @@ public class PlayerMove : MonoBehaviour
 
             yield return null;
         }
-
-        ResetMap();
+        GameManager.instance.ShowScore();
     }
 
     // 적과 닿았을시

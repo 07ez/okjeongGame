@@ -26,7 +26,6 @@ public class CameraMove : MonoBehaviour
         }
 
     }
-
     IEnumerator Move(Vector3 targetPos)
     {
         Vector3 start = transform.position;
