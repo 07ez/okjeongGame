@@ -22,7 +22,7 @@ public class LeaderboardManager : MonoBehaviour
         }
 
         // Firebase에서 데이터 가져오기 (상위 10명)
-        FirebaseManager.instance.GetTopRankings(10, (rankList) => {
+        FirebaseManager.instance.GetTopRankings(50, (rankList) => {
             DisplayRanking(rankList);
         });
     }
@@ -40,6 +40,10 @@ public class LeaderboardManager : MonoBehaviour
             item.transform.GetChild(0).GetComponent<TMP_Text>().text = rank.ToString() + "등"; // 순위
             item.transform.GetChild(1).GetComponent<TMP_Text>().text = data.name;       // 이름
             item.transform.GetChild(2).GetComponent<TMP_Text>().text = data.highScore.ToString() + "점"; // 점수
+
+            if (rank == 1) item.transform.GetChild(0).GetComponent<TMP_Text>().color = Color.gold;
+            else if (rank == 2) item.transform.GetChild(0).GetComponent<TMP_Text>().color = Color.silver;
+            else if (rank == 3) item.transform.GetChild(0).GetComponent<TMP_Text>().color = Color.rosyBrown;
 
             rank++;
         }

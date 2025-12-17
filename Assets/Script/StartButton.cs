@@ -11,6 +11,7 @@ public class StartButton : MonoBehaviour
     public bool useEaseOut = true;
     public TMP_InputField studentIdInput;
     public TMP_InputField nameInput;
+    public GameObject egg;
 
     public void OnClick()
     {
@@ -35,8 +36,15 @@ public class StartButton : MonoBehaviour
                 Debug.Log("이름 없음");
                 yield break;
             }
-
+            else if (studentId == "옥정고" || name == "옥정고")
+            {
+                Debug.Log("이스터에그");
+                egg.SetActive(true);
+                yield break;
+            }
         }
+        if (egg != null && egg.activeSelf)
+            egg.SetActive(false);
 
         float t = 0f;
 
