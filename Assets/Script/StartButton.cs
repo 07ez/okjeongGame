@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,6 +9,8 @@ public class StartButton : MonoBehaviour
     public List<MoveUI> moveUIList = new List<MoveUI>();
     public float duration = 0.3f;
     public bool useEaseOut = true;
+    public TMP_InputField studentIdInput;
+    public TMP_InputField nameInput;
 
     public void OnClick()
     {
@@ -22,6 +25,19 @@ public class StartButton : MonoBehaviour
 
     private IEnumerator MoveOutCoroutine(string ObjName)
     {
+        if (!string.IsNullOrEmpty(ObjName) && ObjName == "RealStart")
+        {
+            string studentId = studentIdInput.text.Trim();
+            string name = nameInput.text.Trim();
+
+            if (studentId == "학번" || name == "이름")
+            {
+                Debug.Log("이름 없음");
+                yield break;
+            }
+
+        }
+
         float t = 0f;
 
         Vector2[] starts = new Vector2[moveUIList.Count];
@@ -51,10 +67,18 @@ public class StartButton : MonoBehaviour
             yield return null;
         }
 
-        if (!string.IsNullOrEmpty(ObjName) && ObjName == "Start")
+        if (ObjName == "RealStart")
         {
+            string studentId = studentIdInput.text.Trim();
+            string name = nameInput.text.Trim();
+            Debug.Log("학번: " + studentId + ", 이름: " + name);
+            FirebaseManager.instance.SaveOrLoadPlayerData(name, studentId);
             yield return new WaitForSecondsRealtime(0.5f);
             SceneManager.LoadScene("InGameScene");
+        }
+        else if (ObjName == "LeaderBoard")
+        {
+            LeaderboardManager.instance.OpenLeaderboard();
         }
     }
 }

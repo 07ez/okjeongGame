@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerMove : MonoBehaviour
 {
@@ -92,7 +93,7 @@ public class PlayerMove : MonoBehaviour
         );
 
         if (Input.GetKeyDown(KeyCode.Escape))
-            Application.Quit();
+            SceneManager.LoadScene("StartZone");
     }
 
     public void ResetMap()
